@@ -30,6 +30,11 @@ FORMULAE=(
   tmux
   uv
   zsh-autosuggestions
+  prettier
+  gopls
+  pyright
+  ruff
+  go
 )
 
 
