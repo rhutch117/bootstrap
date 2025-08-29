@@ -70,16 +70,13 @@ echo
 echo "${GREEN}Looking for updates..."
 echo
 
-read -r -p "Do you want to install all available macOS updates now? [y/N] " response
-case "$response" in
-    [yY][eE][sS]|[yY])
-        sudo softwareupdate -i -a
-        ;;
-    *)
-        echo "Skipped macOS updates."
-        ;;
-esac
-
+echo -n "${RED}Do you want to install all available macOS updates now? [y/N] "
+read REPLY
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    sudo softwareupdate -i -a
+else
+    echo "Skipped macOS updates."
+fi
 
 ##############################
 # Install Homebrew
@@ -89,52 +86,49 @@ echo
 echo "${GREEN}Homebrew Installation"
 echo
 
-read -r -p "Do you want to install Homebrew now? [y/N] " response
-case "$response" in
-    [yY][eE][sS]|[yY])
-        echo "${GREEN}Installing Homebrew...${NC}"
-        NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+echo -n "${RED}Do you want to install Homebrew now? [y/N]"
+read REPLY
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "${GREEN}Installing Homebrew...${NC}"
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-        # Append Homebrew initialization to $ZDOTDIR/.zprofile and immediately evaluate for this session
-        add_line_once 'eval "$(/opt/homebrew/bin/brew shellenv)"' "$ZDOTDIR/.zprofile"
-        eval "$(/opt/homebrew/bin/brew shellenv)"
+    # Append Homebrew initialization to $ZDOTDIR/.zprofile and immediately evaluate for this session
+    add_line_once 'eval "$(/opt/homebrew/bin/brew shellenv)"' "$ZDOTDIR/.zprofile"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
 
-        # Check installation and update
+    # Check installation and update
+    echo
+    echo "${GREEN}Checking installation..."
+    brew update && brew doctor
+    export HOMEBREW_NO_INSTALL_CLEANUP=1  # don't run cleanup after each package install
+
+    # Check for Brewfile in the current directory
+    if [ -f "./Brewfile" ]; then
         echo
-        echo "${GREEN}Checking installation..."
-        brew update && brew doctor
-        export HOMEBREW_NO_INSTALL_CLEANUP=1  # don't run cleanup after each package install
-
-        # Check for Brewfile in the current directory
-        if [ -f "./Brewfile" ]; then
-            echo
-            echo "${GREEN}Brewfile found. Using it to install packages..."
-            brew bundle
-            echo "${GREEN}Installation from Brewfile complete."
-        else
-            # Install default formulae
-            echo
-            echo "${GREEN}Installing formulae..."
-            for formula in "${FORMULAE[@]}"; do
-                brew install "$formula" || echo "${RED}Failed to install $formula. Continuing...${NC}"
-            done
-
-            echo "${GREEN}Installing casks..."
-            for cask in "${CASKS[@]}"; do
-                brew install --cask "$cask" || echo "${RED}Failed to install $cask. Continuing...${NC}"
-            done
-        fi
-
-        # Cleanup
+        echo "${GREEN}Brewfile found. Using it to install packages..."
+        brew bundle
+        echo "${GREEN}Installation from Brewfile complete."
+    else
+        # Install default formulae
         echo
-        echo "${GREEN}Cleaning up..."
-        brew update && brew upgrade && brew cleanup && brew doctor
+        echo "${GREEN}Installing formulae..."
+        for formula in "${FORMULAE[@]}"; do
+            brew install "$formula" || echo "${RED}Failed to install $formula. Continuing...${NC}"
+        done
 
-        ;;
-    *)
-        echo "Skipped Homebrew installation."
-        ;;
-esac
+        echo "${GREEN}Installing casks..."
+        for cask in "${CASKS[@]}"; do
+            brew install --cask "$cask" || echo "${RED}Failed to install $cask. Continuing...${NC}"
+        done
+    fi
+
+    # Cleanup
+    echo
+    echo "${GREEN}Cleaning up..."
+    brew update && brew upgrade && brew cleanup && brew doctor
+else
+    echo "Skipped Homebrew installation."
+fi
 
 
 # --- Terraform Installation via Homebrew Tap ---
