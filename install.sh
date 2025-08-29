@@ -82,10 +82,6 @@ fi
 # Install Homebrew
 ##############################
 
-echo
-echo "${GREEN}Homebrew Installation"
-echo
-
 echo -n "${RED}Do you want to install Homebrew now? ${NC}[y/N]"
 read REPLY
 if [[ $REPLY =~ ^[Yy]$ ]]; then
