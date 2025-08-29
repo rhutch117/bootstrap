@@ -16,7 +16,8 @@ NC='\033[0m' # No Color
 #########
 
 clear
-echo "Preparing to install..."
+echo
+echo "${GREEN}Preparing to install..."
 echo Enter root password
 
 
@@ -24,10 +25,11 @@ echo Enter root password
 sudo -v
 
 
-# Keep sudo alive until the script finishes
+# Keep Sudo until script is finished
 while true; do
-  sudo -v
+  sudo -n true
   sleep 60
+  kill -0 "$$" || exit
 done 2>/dev/null &
 
 # Make XDG_CONFIG_HOME available in this script
