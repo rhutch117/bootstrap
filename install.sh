@@ -137,12 +137,58 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 
+# --- SSH Key Generation Step ---
+echo
+echo -n "${RED}Do you want to generate a new SSH key? ${NC}[y/N] "
+read REPLY
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    # Ask for email
+    echo -n "Enter the email to associate with your SSH key: "
+    read SSH_EMAIL
+
+    # Set default key path
+    SSH_KEY_PATH="$HOME/.ssh/id_ed25519"
+
+    # Check if key already exists
+    if [ -f "$SSH_KEY_PATH" ]; then
+        echo "${RED}Warning: $SSH_KEY_PATH already exists.${NC}"
+        echo -n "Do you want to overwrite it? [y/N] "
+        read OVERWRITE
+        if [[ ! $OVERWRITE =~ ^[Yy]$ ]]; then
+            echo "Skipping SSH key generation."
+        else
+            rm -f "$SSH_KEY_PATH" "$SSH_KEY_PATH.pub"
+        fi
+    fi
+
+    # Generate the key
+    if [ ! -f "$SSH_KEY_PATH" ] || [[ $OVERWRITE =~ ^[Yy]$ ]]; then
+        echo "Generating new SSH key..."
+        ssh-keygen -t ed25519 -C "$SSH_EMAIL" -f "$SSH_KEY_PATH" -N ""
+        echo "${GREEN}SSH key generated at $SSH_KEY_PATH${NC}"
+
+        # Ensure correct permissions
+        chmod 600 "$SSH_KEY_PATH"
+        chmod 644 "$SSH_KEY_PATH.pub"
+
+        # Optionally add to ssh-agent
+        eval "$(ssh-agent -s)"
+        ssh-add "$SSH_KEY_PATH"
+        echo "${GREEN}SSH key added to ssh-agent${NC}"
+    fi
+fi
+
+
 clear
 echo "${GREEN}Done!"
 
 echo
 echo
-printf "${RED}"
-read -s -k $'?Press ANY KEY to REBOOT\n'
-sudo reboot
-exit
+echo -n "${RED}Do you want to reboot now? ${NC}[y/N] "
+read REPLY
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "${GREEN}Rebooting...${NC}"
+    sudo reboot
+else
+    echo "${GREEN}Skipping reboot. Remember to reboot later to apply all changes.${NC}"
+fi
