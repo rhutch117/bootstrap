@@ -23,15 +23,12 @@ echo Enter root password
 # Ask for the administrator password upfront.
 sudo -v
 
-# Now refresh sudo every 60 seconds in foreground
-# This ensures the timestamp stays valid for the duration of the script
-(
-  while true; do
-    sudo -v
-    sleep 60
-  done
-) &
-SUDO_REFRESH_PID=$!
+
+# Keep sudo alive until the script finishes
+while true; do
+  sudo -v
+  sleep 60
+done 2>/dev/null &
 
 # Make XDG_CONFIG_HOME available in this script
 export XDG_CONFIG_HOME="$HOME/.config"
@@ -138,10 +135,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     dockutil --remove "$app" &>/dev/null
   done
 fi
-
-
-# At the end, stop the refresh loop
-kill "$SUDO_REFRESH_PID"
 
 
 clear
