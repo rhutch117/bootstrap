@@ -70,7 +70,7 @@ echo
 echo "${GREEN}Looking for updates..."
 echo
 
-echo -n "${RED}Do you want to install all available macOS updates now? [y/N] "
+echo -n "${RED}Do you want to install all available macOS updates now? ${NC}[y/N] "
 read REPLY
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo softwareupdate -i -a
@@ -86,7 +86,7 @@ echo
 echo "${GREEN}Homebrew Installation"
 echo
 
-echo -n "${RED}Do you want to install Homebrew now? [y/N]"
+echo -n "${RED}Do you want to install Homebrew now? ${NC}[y/N]"
 read REPLY
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "${GREEN}Installing Homebrew...${NC}"
