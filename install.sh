@@ -143,6 +143,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     brew install hashicorp/tap/terraform
 
     echo "${GREEN}Terraform installation complete.${NC}"
+else
+    echo "Skipped Terraform installation."
 fi
 
 
@@ -158,6 +160,8 @@ if [[ -z $REPLY || $REPLY =~ ^[Yy]$ ]]; then
   for setting in "${SETTINGS[@]}"; do
     eval $setting
   done
+else
+    echo "Skipped Apple default settings."
 fi
 
 
@@ -183,6 +187,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   for app in "${DOCK_REMOVE[@]}"; do
     dockutil --remove "$app" &>/dev/null
   done
+else
+    echo "Skipped dock customization."
 fi
 
 
@@ -228,9 +234,12 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         ssh-add "$SSH_KEY_PATH"
         echo "${GREEN}SSH key added to ssh-agent${NC}"
     fi
+else
+    echo "Skipped ssh key generation."
 fi
 
 
+echo
 echo "${GREEN}Done!"
 
 echo
