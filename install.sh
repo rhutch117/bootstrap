@@ -231,7 +231,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 
-clear
 echo "${GREEN}Done!"
 
 echo
