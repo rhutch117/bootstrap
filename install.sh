@@ -1,29 +1,24 @@
 #!/bin/zsh
 
-
 source ./config
 
-
-# COLOR
+# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-
-
-#########
-# Start
-#########
+# Location of my config files
+ZDOTDIR_TARGET="$HOME/.config/zsh"
+XDG_CONFIG_TARGET="$HOME/.config"
+ZSHENV_FILE="$HOME/.zshenv"
 
 clear
 echo "${GREEN}Preparing to install..."
 echo
 echo Enter root password
 
-
 # Ask for the administrator password upfront.
 sudo -v
-
 
 # Keep Sudo until script is finished
 while true; do
@@ -32,71 +27,114 @@ while true; do
   kill -0 "$$" || exit
 done 2>/dev/null &
 
-# Make XDG_CONFIG_HOME available in this script
+
+############################
+# Setup Config directories
+############################
+
+# Ensure target directories exist
+mkdir -p "$ZDOTDIR_TARGET"
+mkdir -p "$XDG_CONFIG_TARGET"
+
+# Ensure ~/.zshenv exists
+if [ ! -f "$ZSHENV_FILE" ]; then
+  echo "Creating $ZSHENV_FILE..."
+  touch "$ZSHENV_FILE"
+fi
+
+# Helper to add line only if missing
+add_line_once() {
+  local line="$1"
+  local file="$2"
+
+  # Ensure file exists
+  [ -f "$file" ] || touch "$file"
+
+  # Append only if the exact line isn’t already in the file
+  grep -qxF "$line" "$file" || echo "$line" >> "$file"
+}
+
+add_line_once 'export XDG_CONFIG_HOME="$HOME/.config"' "$ZSHENV_FILE"
+add_line_once 'export ZDOTDIR="$HOME/.config/zsh"' "$ZSHENV_FILE"
+
+# Export values so they can be used in this script too
 export XDG_CONFIG_HOME="$HOME/.config"
-mkdir -p "$XDG_CONFIG_HOME"
-
-# Persist it in .zprofile if not already present
-if ! grep -qxF 'export XDG_CONFIG_HOME="$HOME/.config"' ~/.zprofile; then
-  echo 'export XDG_CONFIG_HOME="$HOME/.config"' >> ~/.zprofile
-fi
+export ZDOTDIR="$HOME/.config/zsh"
 
 
-# Update macOS
+##############################
+# Update MacOS (prompt first)
+##############################
+
 echo
-echo "${GREEN}Looking for updates.."
+echo "${GREEN}Looking for updates..."
 echo
-sudo softwareupdate -i -a
+
+read -r -p "Do you want to install all available macOS updates now? [y/N] " response
+case "$response" in
+    [yY][eE][sS]|[yY])
+        sudo softwareupdate -i -a
+        ;;
+    *)
+        echo "Skipped macOS updates."
+        ;;
+esac
 
 
+##############################
 # Install Homebrew
+##############################
+
 echo
-echo "${GREEN}Installing Homebrew"
+echo "${GREEN}Homebrew Installation"
 echo
-NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
+read -r -p "Do you want to install Homebrew now? [y/N] " response
+case "$response" in
+    [yY][eE][sS]|[yY])
+        echo "${GREEN}Installing Homebrew...${NC}"
+        NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Append Homebrew initialization to .zprofile (.zprofile only runs once per session, where .zshrc runs every new shell)
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>${HOME}/.zprofile
-# Immediately evaluate the Homebrew environment settings for the current session
-eval "$(/opt/homebrew/bin/brew shellenv)"
+        # Append Homebrew initialization to $ZDOTDIR/.zprofile and immediately evaluate for this session
+        add_line_once 'eval "$(/opt/homebrew/bin/brew shellenv)"' "$ZDOTDIR/.zprofile"
+        eval "$(/opt/homebrew/bin/brew shellenv)"
 
+        # Check installation and update
+        echo
+        echo "${GREEN}Checking installation..."
+        brew update && brew doctor
+        export HOMEBREW_NO_INSTALL_CLEANUP=1  # don't run cleanup after each package install
 
-# Check installation and update
-echo
-echo "${GREEN}Checking installation.."
-echo
-brew update && brew doctor
-export HOMEBREW_NO_INSTALL_CLEANUP=1  # don't run cleanup after each package install
+        # Check for Brewfile in the current directory
+        if [ -f "./Brewfile" ]; then
+            echo
+            echo "${GREEN}Brewfile found. Using it to install packages..."
+            brew bundle
+            echo "${GREEN}Installation from Brewfile complete."
+        else
+            # Install default formulae
+            echo
+            echo "${GREEN}Installing formulae..."
+            for formula in "${FORMULAE[@]}"; do
+                brew install "$formula" || echo "${RED}Failed to install $formula. Continuing...${NC}"
+            done
 
+            echo "${GREEN}Installing casks..."
+            for cask in "${CASKS[@]}"; do
+                brew install --cask "$cask" || echo "${RED}Failed to install $cask. Continuing...${NC}"
+            done
+        fi
 
-# Check for Brewfile in the current directory and use it if present
-if [ -f "./Brewfile" ]; then
-  echo
-  echo "${GREEN}Brewfile found. Using it to install packages..."
-  brew bundle
-  echo "${GREEN}Installation from Brewfile complete."
-else
-  # If no Brewfile is present, continue with the default installation
+        # Cleanup
+        echo
+        echo "${GREEN}Cleaning up..."
+        brew update && brew upgrade && brew cleanup && brew doctor
 
-  # Install Casks and Formulae
-  echo
-  echo "${GREEN}Installing formulae..."
-  for formula in "${FORMULAE[@]}"; do
-    brew install "$formula"
-    if [ $? -ne 0 ]; then
-      echo "${RED}Failed to install $formula. Continuing...${NC}"
-    fi
-  done
-
-  echo "${GREEN}Installing casks..."
-  for cask in "${CASKS[@]}"; do
-    brew install --cask "$cask"
-    if [ $? -ne 0 ]; then
-      echo "${RED}Failed to install $cask. Continuing...${NC}"
-    fi
-  done
-fi
+        ;;
+    *)
+        echo "Skipped Homebrew installation."
+        ;;
+esac
 
 
 # --- Terraform Installation via Homebrew Tap ---
@@ -114,13 +152,10 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 
-# Cleanup
-echo
-echo "${GREEN}Cleaning up..."
-brew update && brew upgrade && brew cleanup && brew doctor
+##########################
+# Apple specific settings
+##########################
 
-
-# Set Apple specific default settings
 echo
 echo -n "${RED}Configure default system settings? ${NC}[Y/n]"
 read REPLY
@@ -132,7 +167,10 @@ if [[ -z $REPLY || $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 
+################
 # Dock settings
+################
+
 echo
 echo -n "${RED}Apply Dock settings?? ${NC}[y/N]"
 read REPLY
@@ -154,7 +192,10 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 
-# --- SSH Key Generation Step ---
+################
+# SSH Key Gen
+################
+
 echo
 echo -n "${RED}Do you want to generate a new SSH key? ${NC}[y/N] "
 read REPLY
