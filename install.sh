@@ -16,14 +16,7 @@ NC='\033[0m' # No Color
 #########
 
 clear
-echo " _           _        _ _       _     "
-echo "(_)         | |      | | |     | |    "
-echo " _ _ __  ___| |_ __ _| | |  ___| |__  "
-echo "| | |_ \/ __| __/ _  | | | / __| |_ \ "
-echo "| | | | \__ \ || (_| | | |_\__ \ | | |"
-echo "|_|_| |_|___/\__\__,_|_|_(_)___/_| |_|"
-echo
-echo
+echo "Preparing to install..."
 echo Enter root password
 
 
@@ -77,6 +70,35 @@ brew update && brew doctor
 export HOMEBREW_NO_INSTALL_CLEANUP=1  # don't run cleanup after each package install
 
 
+# Check for Brewfile in the current directory and use it if present
+if [ -f "./Brewfile" ]; then
+  echo
+  echo "${GREEN}Brewfile found. Using it to install packages..."
+  brew bundle
+  echo "${GREEN}Installation from Brewfile complete."
+else
+  # If no Brewfile is present, continue with the default installation
+
+  # Install Casks and Formulae
+  echo
+  echo "${GREEN}Installing formulae..."
+  for formula in "${FORMULAE[@]}"; do
+    brew install "$formula"
+    if [ $? -ne 0 ]; then
+      echo "${RED}Failed to install $formula. Continuing...${NC}"
+    fi
+  done
+
+  echo "${GREEN}Installing casks..."
+  for cask in "${CASKS[@]}"; do
+    brew install --cask "$cask"
+    if [ $? -ne 0 ]; then
+      echo "${RED}Failed to install $cask. Continuing...${NC}"
+    fi
+  done
+fi
+
+
 # Cleanup
 echo
 echo "${GREEN}Cleaning up..."
@@ -118,12 +140,7 @@ fi
 
 
 clear
-echo "${GREEN}______ _____ _   _  _____ "
-echo "${GREEN}|  _  \  _  | \ | ||  ___|"
-echo "${GREEN}| | | | | | |  \| || |__  "
-echo "${GREEN}| | | | | | | .   ||  __| "
-echo "${GREEN}| |/ /\ \_/ / |\  || |___ "
-echo "${GREEN}|___/  \___/\_| \_/\____/ "
+echo "${GREEN}Done!"
 
 echo
 echo
