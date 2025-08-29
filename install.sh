@@ -16,8 +16,8 @@ NC='\033[0m' # No Color
 #########
 
 clear
-echo
 echo "${GREEN}Preparing to install..."
+echo
 echo Enter root password
 
 
