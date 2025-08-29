@@ -97,6 +97,21 @@ else
 fi
 
 
+# --- Terraform Installation via Homebrew Tap ---
+echo
+echo -n "${RED}Do you want to add the HashiCorp tap and install Terraform? ${NC}[y/N] "
+read REPLY
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "${GREEN}Adding HashiCorp tap for Terraform...${NC}"
+    brew tap hashicorp/tap
+
+    echo "${GREEN}Installing Terraform...${NC}"
+    brew install hashicorp/tap/terraform
+
+    echo "${GREEN}Terraform installation complete.${NC}"
+fi
+
+
 # Cleanup
 echo
 echo "${GREEN}Cleaning up..."
