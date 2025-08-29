@@ -43,6 +43,10 @@ SETTINGS=(
   # Shows all file extensions in Finder
   "defaults write -g AppleShowAllExtensions -bool true"
 
+  # Key repeat settings
+  "defaults write -g KeyRepeat -int 2"
+  "defaults write -g InitialKeyRepeat -int 25"
+
   # Shows hidden files in Finder
   "defaults write com.apple.finder AppleShowAllFiles true"
 
