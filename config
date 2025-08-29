@@ -1,0 +1,96 @@
+#################
+# CONFIGURATION
+#################
+
+# Homebrew Casks: Applications installed via Homebrew Cask.
+# These are GUI applications available through Homebrew.
+CASKS=(
+  google-chrome
+  alacritty
+  slack
+  karabiner-elements
+  font-monaspace
+  pgadmin4
+)
+
+
+# Homebrew Formulae: Command line tools installed via Homebrew.
+FORMULAE=(
+  jq
+  lazygit
+  bat
+  btop
+  lsd
+  neovim
+  pyenv
+  ripgrep
+  fzf
+  starship
+  terraform
+  tldr
+  tmux
+  uv
+  zsh-autosuggestions
+)
+
+
+# SYSTEM SETTINGS: Commands to configure macOS system preferences and behaviors.
+SETTINGS=(
+  # Shows all file extensions in Finder
+  "defaults write -g AppleShowAllExtensions -bool true"
+
+  # Shows hidden files in Finder
+  "defaults write com.apple.finder AppleShowAllFiles true"
+
+  # Shows the path bar in Finder
+  "defaults write com.apple.finder ShowPathbar -bool true"
+
+  # Shows the status bar in Finder
+  "defaults write com.apple.finder ShowStatusBar -bool true"
+
+  # Makes new Finder windows open in the home directory
+  "defaults write com.apple.finder NewWindowTarget PfHm"
+
+  # Sets the preferred view style in Finder to list view
+  "defaults write com.apple.Finder FXPreferredViewStyle Nlsv"
+
+  # Makes Finder sort folders before files
+  "defaults write com.apple.finder _FXSortFoldersFirst -bool true"
+  
+  # Stops Photos from opening automatically when devices are plugged in
+  "defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true" # does this work?
+
+  # Dont create .DS_Store Files On Network Or USB Volumes
+  "defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true"
+  "defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true"
+
+  # Disable the warning when changing a file extension
+  "defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false"
+
+  # Makes the Library folder visible in Finder
+  "chflags nohidden ~/Library"
+)
+
+
+# DOCK SETTINGS: Configuration for adding, removing, and replacing Dock items.
+DOCK_REPLACE=(
+  # Format: "replacement_app_path|app_name_to_replace"
+  "/Applications/Google Chrome.app|Safari"
+)
+
+DOCK_ADD=(
+  "/Applications/Alacritty.app"
+  "/Applications/Slack.app"
+)
+
+DOCK_REMOVE=(
+  "Message"
+  "Maps"
+  "Photos"
+  "Reminders"
+  "FaceTime"
+  "Contacts"
+  "TV"
+  "Music"
+  "Mail"
+)
