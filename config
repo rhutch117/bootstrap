@@ -12,6 +12,7 @@ CASKS=(
   font-monaspace
   pgadmin4
   rectangle
+  logi-options+
 )
 
 
