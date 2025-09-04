@@ -14,6 +14,7 @@ CASKS=(
   rectangle
   logi-options+
   docker
+  spacelauncher
 )
 
 
