@@ -40,6 +40,7 @@ FORMULAE=(
   ruff
   go
   git-delta
+  font-hack-nerd-font
 )
 
 
