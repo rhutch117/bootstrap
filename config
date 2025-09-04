@@ -38,6 +38,7 @@ FORMULAE=(
   pyright
   ruff
   go
+  git-delta
 )
 
 
