@@ -41,6 +41,8 @@ FORMULAE=(
   go
   git-delta
   font-hack-nerd-font
+  openjdk
+  kind
 )
 
 
