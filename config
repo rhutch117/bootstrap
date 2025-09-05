@@ -43,6 +43,7 @@ FORMULAE=(
   font-hack-nerd-font
   openjdk
   kind
+  helm
 )
 
 
