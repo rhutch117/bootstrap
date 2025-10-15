@@ -44,6 +44,7 @@ FORMULAE=(
   openjdk
   kind
   helm
+  pnpm
 )
 
 
