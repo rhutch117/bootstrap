@@ -45,6 +45,7 @@ FORMULAE=(
   kind
   helm
   pnpm
+  stow
 )
 
 

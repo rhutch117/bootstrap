@@ -236,6 +236,47 @@ else
 fi
 
 
+##########################
+# Tmux Plugin Setup
+##########################
+
+echo
+echo -n "${RED}Do you want to install tmux plugins (TPM, sensible, resurrect)? ${NC}[y/N] "
+read REPLY
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    TMUX_PLUGIN_DIR="$HOME/.tmux/plugins"
+    mkdir -p "$TMUX_PLUGIN_DIR"
+
+    # Clone TPM if missing
+    if [ ! -d "$TMUX_PLUGIN_DIR/tpm" ]; then
+        echo "${GREEN}Cloning TPM...${NC}"
+        git clone https://github.com/tmux-plugins/tpm "$TMUX_PLUGIN_DIR/tpm"
+    else
+        echo "TPM already installed."
+    fi
+
+    # Clone tmux-sensible
+    if [ ! -d "$TMUX_PLUGIN_DIR/tmux-sensible" ]; then
+        echo "${GREEN}Cloning tmux-sensible...${NC}"
+        git clone https://github.com/tmux-plugins/tmux-sensible "$TMUX_PLUGIN_DIR/tmux-sensible"
+    else
+        echo "tmux-sensible already installed."
+    fi
+
+    # Clone tmux-resurrect
+    if [ ! -d "$TMUX_PLUGIN_DIR/tmux-resurrect" ]; then
+        echo "${GREEN}Cloning tmux-resurrect...${NC}"
+        git clone https://github.com/tmux-plugins/tmux-resurrect "$TMUX_PLUGIN_DIR/tmux-resurrect"
+    else
+        echo "tmux-resurrect already installed."
+    fi
+
+    echo "${GREEN}Tmux plugins setup complete.${NC}"
+else
+    echo "Skipped tmux plugin setup."
+fi
+
+
 echo
 echo "${GREEN}Done!"
 
