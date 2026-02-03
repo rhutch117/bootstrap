@@ -246,6 +246,62 @@ fi
 
 
 ##########################
+# Clone Dotfiles Repository
+##########################
+
+echo
+echo -n "${RED}Do you want to clone your dotfiles repository? ${NC}[y/N] "
+read REPLY
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    DOTFILES_REPO="https://github.com/rhutch117/dotfiles"
+    DOTFILES_DIR="$HOME/dotfiles"
+
+    # Check if directory already exists
+    if [ -d "$DOTFILES_DIR" ]; then
+        echo "${RED}Warning: $DOTFILES_DIR already exists.${NC}"
+        echo "What would you like to do?"
+        echo "  1) Skip (keep existing directory)"
+        echo "  2) Overwrite (remove and re-clone)"
+        echo "  3) Update (git pull)"
+        echo -n "Enter choice [1/2/3]: "
+        read CHOICE
+
+        case $CHOICE in
+            2)
+                echo "${GREEN}Removing existing directory...${NC}"
+                rm -rf "$DOTFILES_DIR"
+                echo "${GREEN}Cloning dotfiles repository...${NC}"
+                git clone "$DOTFILES_REPO" "$DOTFILES_DIR" || {
+                    echo "${RED}Failed to clone dotfiles repository. Continuing...${NC}"
+                }
+                ;;
+            3)
+                echo "${GREEN}Updating dotfiles repository...${NC}"
+                cd "$DOTFILES_DIR" && git pull || {
+                    echo "${RED}Failed to update dotfiles repository. Continuing...${NC}"
+                }
+                ;;
+            *)
+                echo "Skipping dotfiles clone."
+                ;;
+        esac
+    else
+        echo "${GREEN}Cloning dotfiles repository...${NC}"
+        git clone "$DOTFILES_REPO" "$DOTFILES_DIR" || {
+            echo "${RED}Failed to clone dotfiles repository. Continuing...${NC}"
+        }
+    fi
+
+    if [ -d "$DOTFILES_DIR" ]; then
+        echo "${GREEN}Dotfiles repository ready at $DOTFILES_DIR${NC}"
+        echo "You can now run 'stow <package_name>' to symlink your dotfiles."
+    fi
+else
+    echo "Skipped dotfiles clone."
+fi
+
+
+##########################
 # Tmux Plugin Setup
 ##########################
 
