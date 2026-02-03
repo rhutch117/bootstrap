@@ -13,7 +13,7 @@ CASKS=(
   rectangle
   docker
   spacelauncher
-  font-fira-code-nerd
+  font-fira-code
 )
 
 
