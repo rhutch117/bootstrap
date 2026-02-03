@@ -14,6 +14,7 @@ CASKS=(
   docker
   spacelauncher
   font-fira-code
+  ghostty
 )
 
 
