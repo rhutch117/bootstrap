@@ -6,24 +6,23 @@
 # These are GUI applications available through Homebrew.
 CASKS=(
   google-chrome
-  alacritty
+  firefox
   slack
   karabiner-elements
-  font-monaspace
   pgadmin4
   rectangle
-  logi-options+
   docker
   spacelauncher
+  font-fira-code-nerd
 )
 
 
 # Homebrew Formulae: Command line tools installed via Homebrew.
 FORMULAE=(
-  jq
-  lazygit
   bat
   btop
+  jq
+  lazygit
   lsd
   neovim
   pyenv
@@ -98,8 +97,9 @@ DOCK_REPLACE=(
 )
 
 DOCK_ADD=(
-  "/Applications/Alacritty.app"
+  "/Applications/Ghostty.app"
   "/Applications/Slack.app"
+  "/Applications/Firefox.app"
 )
 
 DOCK_REMOVE=(

@@ -7,9 +7,12 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-# Location of my config files
-ZDOTDIR_TARGET="$HOME/.config/zsh"
-XDG_CONFIG_TARGET="$HOME/.config"
+# Customize location of config files if needed
+# Export values so they can be used in this script
+export XDG_CONFIG_HOME="$HOME/.config"
+export ZDOTDIR="$HOME/.config/zsh"
+
+# this one cannot move, it is read by zsh to set the environment variables
 ZSHENV_FILE="$HOME/.zshenv"
 
 clear
@@ -28,21 +31,12 @@ while true; do
 done 2>/dev/null &
 
 
+
 ############################
-# Setup Config directories
+# Helper functions
 ############################
 
-# Ensure target directories exist
-mkdir -p "$ZDOTDIR_TARGET"
-mkdir -p "$XDG_CONFIG_TARGET"
-
-# Ensure ~/.zshenv exists
-if [ ! -f "$ZSHENV_FILE" ]; then
-  echo "Creating $ZSHENV_FILE..."
-  touch "$ZSHENV_FILE"
-fi
-
-# Helper to add line only if missing
+# Add line only if missing
 add_line_once() {
   local line="$1"
   local file="$2"
@@ -57,9 +51,22 @@ add_line_once() {
 add_line_once 'export XDG_CONFIG_HOME="$HOME/.config"' "$ZSHENV_FILE"
 add_line_once 'export ZDOTDIR="$HOME/.config/zsh"' "$ZSHENV_FILE"
 
-# Export values so they can be used in this script too
-export XDG_CONFIG_HOME="$HOME/.config"
-export ZDOTDIR="$HOME/.config/zsh"
+
+
+############################
+# Setup Config directories
+############################
+
+# Ensure target directories exist
+mkdir -p "$ZDOTDIR_TARGET"
+mkdir -p "$XDG_CONFIG_TARGET"
+
+# Ensure ~/.zshenv exists
+if [ ! -f "$ZSHENV_FILE" ]; then
+  echo "Creating $ZSHENV_FILE..."
+  touch "$ZSHENV_FILE"
+fi
+
 
 
 ##############################
@@ -77,6 +84,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 else
     echo "Skipped macOS updates."
 fi
+
+
 
 ##############################
 # Install Homebrew
