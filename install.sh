@@ -309,7 +309,7 @@ echo
 echo -n "${RED}Do you want to install tmux plugins (TPM, sensible, resurrect)? ${NC}[y/N] "
 read REPLY
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    TMUX_PLUGIN_DIR="$HOME/.tmux/plugins"
+    TMUX_PLUGIN_DIR="$HOME/.config/tmux/plugins"
     mkdir -p "$TMUX_PLUGIN_DIR"
 
     # Clone TPM if missing
