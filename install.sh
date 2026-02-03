@@ -98,8 +98,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "${GREEN}Installing Homebrew...${NC}"
     NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-    # Append Homebrew initialization to $ZDOTDIR/.zprofile and immediately evaluate for this session
-    add_line_once 'eval "$(/opt/homebrew/bin/brew shellenv)"' "$ZDOTDIR/.zprofile"
+    # Just evaluate Homebrew's shellenv for this session.
+    # Do not write to $ZDOTDIR/.zprofile (it won't exist yet; profile added after dotfiles are stowed)
     eval "$(/opt/homebrew/bin/brew shellenv)"
 
     # Check installation and update
